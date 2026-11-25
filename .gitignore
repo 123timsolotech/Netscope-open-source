@@ -1,0 +1,52 @@
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.suo
+
+# --- Secrets / local config ---
+.env
+.env.*
+!.env.example
+# Local Compose additions (docs/deployment.md)
+docker-compose.override.yml
+
+# --- Python (backend) ---
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+
+# --- SQLite databases (never commit real data) ---
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+# Local runtime data folders (the dev database lives in backend/data/)
+/data/
+backend/data/
+*.db.bak-*
+
+# --- Node (frontend) ---
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.local
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Logs ---
+logs/
+*.log

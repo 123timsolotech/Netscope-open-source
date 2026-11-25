@@ -1,0 +1,26 @@
+# Allowlist: only what the image needs goes into the build (decision M8.3). Keeps .env files,
+# databases, backups, caches, node_modules and the git history out of the image.
+# Adding a file the app reads at runtime? Allow it here too (and in the Dockerfile).
+*
+
+!backend/pyproject.toml
+!backend/uv.lock
+!backend/alembic.ini
+!backend/migrations/
+!backend/app/
+!frontend/
+
+# Never, even inside the allowed folders:
+**/__pycache__
+**/*.py[cod]
+**/.env
+**/.env.*
+**/*.db
+**/*.db-*
+**/*.db.bak-*
+**/*.sqlite*
+frontend/node_modules
+frontend/dist
+frontend/coverage
+frontend/*.tsbuildinfo
+frontend/*.local

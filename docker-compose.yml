@@ -1,0 +1,63 @@
+# NetScope on the home server (brief section 11). Full guide: docs/deployment.md
+#
+#   docker compose up -d            build (if needed) and start
+#   docker compose logs netscope    the log (the one-time setup token on the first start)
+#
+# Settings: put them in a `.env` file next to this one (see `.env.example`), not here.
+name: netscope
+
+services:
+  netscope:
+    build: .
+    image: netscope:local
+    # Always built from this folder, never pulled from a registry (decision M8.4).
+    pull_policy: build
+    # One container, one worker: the status monitor runs inside it (brief section 4).
+    container_name: netscope
+    restart: unless-stopped
+    init: true
+    # Room for the monitor to finish its last database write on shutdown.
+    stop_grace_period: 30s
+    ports:
+      # "8000" opens NetScope to the LAN on port 8000. Behind Tailscale Serve use
+      # "127.0.0.1:8000" (docs/deployment.md, "HTTPS with Tailscale Serve").
+      - "${NETSCOPE_PUBLISH:-8000}:8000"
+    environment:
+      NETSCOPE_ALLOWED_HOSTS: ${NETSCOPE_ALLOWED_HOSTS:-}
+      NETSCOPE_TRUSTED_PROXIES: ${NETSCOPE_TRUSTED_PROXIES:-127.0.0.1}
+      NETSCOPE_LOG_LEVEL: ${NETSCOPE_LOG_LEVEL:-INFO}
+      # Optional; empty means unset. After the first start remove NETSCOPE_ADMIN_PASSWORD from
+      # .env and run `docker compose up -d` (it is ignored once the admin exists).
+      NETSCOPE_SETUP_TOKEN: ${NETSCOPE_SETUP_TOKEN:-}
+      NETSCOPE_ADMIN_USERNAME: ${NETSCOPE_ADMIN_USERNAME:-admin}
+      NETSCOPE_ADMIN_PASSWORD: ${NETSCOPE_ADMIN_PASSWORD:-}
+    volumes:
+      # The database (and its automatic backups). Keep it on a local disk.
+      - netscope-data:/data
+    # Hardening (decision M8.5). Ping checks still work: NetScope pings without raw sockets,
+    # and Docker allows that inside containers (net.ipv4.ping_group_range).
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    # A fixed subnet, so the gateway (172.30.240.1) is known: behind Tailscale Serve it is the
+    # only proxy NetScope may trust. If it clashes with a network of yours, choose another one
+    # in docker-compose.override.yml (docs/deployment.md, section 6), not here.
+    ipam:
+      config:
+        - subnet: 172.30.240.0/24
+          gateway: 172.30.240.1
+
+volumes:
+  netscope-data:

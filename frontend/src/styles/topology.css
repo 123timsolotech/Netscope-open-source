@@ -1,0 +1,106 @@
+/* The map page (M5). Loaded with the page, so React Flow's styles stay out of the main file. */
+@import '@xyflow/react/dist/style.css';
+
+.react-flow {
+  --xy-background-color: var(--background);
+  --xy-background-pattern-color: var(--border);
+  --xy-connectionline-stroke: var(--primary);
+  --xy-connectionline-stroke-width: 2;
+  --xy-controls-button-background-color: var(--card);
+  --xy-controls-button-background-color-hover: var(--muted);
+  --xy-controls-button-color: var(--foreground);
+  --xy-controls-button-color-hover: var(--foreground);
+  --xy-controls-button-border-color: var(--border);
+  --xy-controls-box-shadow: none;
+  --xy-attribution-background-color: transparent;
+  --xy-selection-background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+  --xy-selection-border: 1px dashed var(--primary);
+  font-family: var(--font-sans);
+}
+
+.react-flow__controls {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.react-flow__controls-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.react-flow__attribution a {
+  color: var(--muted-foreground);
+}
+
+/* React Flow's own rule (.selectable:focus-visible { outline: none }) must lose. */
+.react-flow__node.selectable:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-lg);
+}
+
+/* Links, by type: the dash pattern tells them apart, not only the color. Also used by the
+   swatches in the legend and the link dialog. */
+.map-link,
+.react-flow__edge-path.map-link {
+  fill: none;
+  stroke-width: 2;
+}
+.map-link-ethernet,
+.react-flow__edge-path.map-link-ethernet {
+  stroke: oklch(0.8 0.02 255);
+}
+.map-link-wifi,
+.react-flow__edge-path.map-link-wifi {
+  stroke: #5eead4;
+  stroke-dasharray: 6 4;
+}
+.map-link-vpn,
+.react-flow__edge-path.map-link-vpn {
+  stroke: #c4b5fd;
+  stroke-dasharray: 0.5 4;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+.map-link-other,
+.react-flow__edge-path.map-link-other {
+  stroke: var(--muted-foreground);
+  stroke-dasharray: 10 3 2 3;
+}
+.react-flow__edge:hover .react-flow__edge-path.map-link,
+.react-flow__edge.selected .react-flow__edge-path.map-link {
+  stroke: var(--primary);
+}
+
+/* The dot to drag a new link from, with a larger area for fingers. */
+.react-flow__handle.map-handle {
+  width: 12px;
+  height: 12px;
+  background: var(--card);
+  border: 2px solid var(--primary);
+}
+.react-flow__handle.map-handle::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+}
+
+/* While a link is drawn, the whole node is where it can be dropped. */
+.react-flow__handle.map-drop-target {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  transform: none;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  pointer-events: none;
+}
+.react-flow__handle.map-drop-target.map-drop-target-active {
+  pointer-events: all;
+}
